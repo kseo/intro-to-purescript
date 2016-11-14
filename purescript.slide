@@ -248,3 +248,74 @@ e.g.,
   main = do
     quickCheck sortIsIdempotent
     quickCheck sortPreservesLength
+    
+* Differences from Haskell
+
+- Evaluation strategy
+- Prelude/base
+- Module Imports
+- Types
+- IO vs Eff
+- Records
+- Type classes
+
+.link https://github.com/purescript/purescript/wiki/Differences-from-Haskell Differences from Haskell
+
+* Evaluation strategy
+
+PureScript is strictly evaluated
+
+* Prelude/base
+
+- No implicit Prelude import in PureScript
+
+* Module Imports
+
+- Type classes in modules must be specifically imported using the class keyword
+
+  module B where
+
+  import A (class Fab)
+
+* Types
+
+- Explicit forall
+
+Polymorphic functions in PureScript require an explicit forall to declare type variables 
+
+  length :: forall a. Array a -> Int
+  ap :: forall m a b. (Monad m) => m (a -> b) -> m a -> m b
+
+- A native Number type which represents JavaScript's standard IEEE 754 float and an Int which is restricted to the range of 32bit integers
+- A type Unit used in place of Haskell's ()
+- Does not provide syntactic sugar for list types
+- Array values can be constructed with [x, y, z]
+
+* IO vs Eff
+
+  main :: IO ()
+
+vs.
+
+  main :: forall e. Eff (fs :: FS, trace :: Trace, process :: Process | e) Unit
+
+* Records
+
+- Encode JavaScript-style objects directly by using row types
+
+  data Point = Point { x :: Number, y :: Number }
+
+* Type classes
+
+- When declaring a type class with a superclass, the arrow is the other way around
+
+  class (Eq a) <= Ord a where
+    ...
+
+- Instances must be given names
+
+  instance arbitraryUnit :: Arbitrary Unit where
+    ...
+
+- Orphan instances are completely disallowed in Purescript
+- It is not possible to declare default member implementations for type classes
