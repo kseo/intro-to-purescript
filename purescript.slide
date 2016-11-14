@@ -168,7 +168,18 @@ PureScript is a small, modern pure functional programming language that compiles
     print a
     log "Second random number:"
     print b
-  
+
+* Extensible Records and Extensible Effects
+
+- Extensible records
+
+  fullName :: forall t. { firstName :: String, lastName :: String | t } -> String
+  fullName person = person.firstName <> " " <> person.lastName
+
+- Extensible effects
+
+  forall e. Eff (console :: CONSOLE, random :: RANDOM | e) Unit
+ 
 * Type Classes
 
   class Show a where
@@ -195,6 +206,17 @@ PureScript is a small, modern pure functional programming language that compiles
         return Math.pow(base, exponent);
       }
     }
+
+* Kind
+
+- * is the usual kind of types
+- ! is the kind of effects
+- # kind constructor is used to construct kinds for rows
+
+e.g.,
+
+  foreign import Eff :: # ! -> * -> *
+  { ... } :: # * -> *
 
 * JavaScript Interoperability (FFI)
 
