@@ -1,0 +1,228 @@
+Introduction to PureScript
+
+Kwang Yul Seo
+Haskell Shcool
+@kwangyulseo
+kwangyul.seo@gmail.com
+
+* Outline
+
+1. What is PureScript?
+2. Core Language
+
+* What is PureScript?
+
+PureScript is a small, modern pure functional programming language that compiles to JavaScript.
+
+* Literals
+
+  a = 0.0 :: Number
+  b = "a" :: String
+  c = true :: Boolean
+  d = [0.0] :: Array Number
+  e = {foo: 0.0} :: { foo :: Number }
+  f = (\a -> a) :: forall a. a -> a
+
+* Function Definition
+
+  sum :: Int -> Int -> Int
+  sum a b = a + b
+
+  identity :: forall t. t -> t
+  identity a = a
+
+  const :: forall a b. a -> b -> a
+  const x y = x
+
+  ($) :: forall a b. (a -> b) -> a -> b
+  ($) f x = f x
+  infixr 0 $
+
+* Records
+
+  kwnag :: { name :: String, birthYear :: Int }
+  kwnag = {name : "Kwang", birthYear : 1980}
+
+  greet :: forall r. { name :: String | r } -> String
+  greet namedThing = "Hello, " ++ namedThing.name
+
+  kwangJr :: { name :: String, birthYear :: Int }
+  kwangJr = kwangJr { birthYear = 2010 }
+
+* Algebraic Data Types
+
+  data Oredering = Less | Equal | Greater
+
+  compare :: Number -> Number -> Ordering
+  compare a b =
+    if a < b then Less
+    else if a == b then Equal
+    else Greater
+
+* Algebraic Data Types
+
+  data List t = EmptyList | Cons t (List t)
+
+  listA :: List Number
+  listA = Cons 0.0 (Cons 1.0 (Cons 2.0 EmptyList))
+
+  listB :: List String
+  listB = Cons "x" (Cons "y" EmptyList)
+
+  listC :: forall a. List a
+  listC = EmptyList
+
+* Type Aliases
+
+  type Option = Maybe
+  type NumberArray = Array Number
+  type NumberList = List Number
+  type Point = { x :: Number, y :: Number }
+  type Pair a b = { left :: a, right :: b }
+  type Predicate a = a -> Boolean
+
+* Pattern Matching
+
+  data Maybe t = Nothing | Just t
+
+  map :: forall a b. (a -> b) -> Maybe a -> Maybe b
+  map f Nothing = Nothing
+  map f (Just x) = Just (f x)
+
+  map' f maybe = case maybe of
+    Nothing -> Nothing
+    (Just x) -> Just (f x)
+
+* Pattern Matching
+
+  type Point = { x :: Number, y :: Number }
+
+  doubleZero :: Point -> Point
+  doubleZero p@{ x: 0, y: y } = p { y = y * 2.0 }
+  doubleZero p = p
+
+  const :: forall a b. a -> b -> a
+  const x _ = x
+
+* Program Structure
+
+  module Namespace.ModuleName where
+
+  import OtherNamespace.OtherModule
+
+  data Type0 t
+    = Constructor0 t
+    | Constructor1 t t 
+
+  value0 = Constructor1 0 1
+
+  value1 = Constructor0 "string"
+
+* Program Structure
+
+  module ModuleName (value0, main, Type0(..)) where
+
+  import OtherModule (value1, Type1(..))
+  import qualified Prelude as P
+
+  data Type0 t = Constructor0 t | Constructor1 t t
+
+  value0 :: Type0 Int
+  value0 = Constructor1 0 1
+
+  main :: Eff () Unit
+  main = P.return P.unit  
+
+* Hello, World!
+
+  module Main (main) where
+
+  import Control.Monad.Eff (Eff(..))
+  import qualified Control.Monad.Eff.Console as Console
+
+  main :: Eff (console :: Console.CONSOLE) Unit
+  main = Console.log "Hello, World!"
+
+* Effects
+
+  module EffExample (main) where
+
+  import Control.Monad.Eff (Eff(..))
+
+  import Control.Monad.Eff.Random (random, RANDOM())
+  -- random :: Eff (random :: RANDOM) Number
+  import Control.Monad.Eff.Console (log, print, CONSOLE())
+  -- log :: String -> Eff (console :: CONSOLE) Unit
+  -- print :: ... -> Eff (console :: CONSOLE) Unit
+
+  main :: Eff (console :: CONSOLE, random :: RANDOM) Unit
+  main = random >>= print
+
+* Composing Effects
+
+  main :: Eff (console :: CONSOLE, random :: RANDOM) Unit
+  main = do
+    a <- random
+    b <- random
+    log "First random number:"
+    print a
+    log "Second random number:"
+    print b
+  
+* Type Classes
+
+  class Show a where
+    show :: a -> String
+    
+  instance showBoolean :: Show Boolean where
+    show true = "true"
+    show false = "false"
+
+  instance showArray :: (Show a) => Show (Array a) where
+    show array = "[" <> map show array <> "]"
+
+* JavaScript Interoperability (FFI)
+
+  -- MyModule.purs
+  foreign import parseFloat :: String -> Number
+  foreign import pow :: Number -> Number -> Number
+
+  // MyModule.js
+  exports.parseFloat = parseFloat;
+  exports.pow =
+    function pow(base) {
+      return function(exponent) {
+        return Math.pow(base, exponent);
+      }
+    }
+
+* JavaScript Interoperability (FFI)
+
+  foreign import data TimeoutID :: *
+  foreign import data TIMER :: !
+
+  foreign import setTimeout :: forall e.
+    Eff e Unit ->
+    Number ->
+    Eff (timer :: TIMER) TimeoutID
+    
+  foreign import clearTimeout ::
+    TimeoutID ->
+    Eff (timer :: TIMER) Unit
+
+* Testing
+
+  module Test.Main (main) where
+
+  import Test.QuickCheck (quickCheck)
+  import Data.Array (sort, length)
+
+  sortIsIdempotent :: Array Number -> Boolean
+  sortIsIdempotent a = sort (sort a) == sort a
+
+  sortPreservesLength :: Array Number -> Boolean
+  sortPreservesLength a = length (sort a) == length a
+
+  main = do
+    quickCheck sortIsIdempotent
+    quickCheck sortPreservesLength
