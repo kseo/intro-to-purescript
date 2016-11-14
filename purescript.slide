@@ -319,3 +319,17 @@ vs.
 
 - Orphan instances are completely disallowed in Purescript
 - It is not possible to declare default member implementations for type classes
+
+* References
+
+1. PureScript by Example
+.link https://leanpub.com/purescript/read
+
+2. Differences from Haskell
+.link https://github.com/purescript/purescript/wiki/Differences-from-Haskell
+
+3. Getting Started with PureScript by Michael Ficarra
+.link https://speakerdeck.com/michaelficarra/getting-started-with-purescript
+
+4. Handling Native Effects with the Eff Monad
+.link http://www.purescript.org/learn/eff/
