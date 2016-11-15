@@ -9,6 +9,7 @@ kwangyul.seo@gmail.com
 
 1. What is PureScript?
 2. Core Language
+3. Tools
 
 * What is PureScript?
 
@@ -320,6 +321,34 @@ vs.
 - Orphan instances are completely disallowed in Purescript
 - It is not possible to declare default member implementations for type classes
 
+* Installation
+
+  $ npm install -g purescript
+  $ npm install -g pulp
+  $ npm install -g bower
+
+* Project
+
+- Starting a Project
+
+  $ pulp init
+
+- Build
+
+  $ pulp Build
+
+- Install dependencies
+
+  $ bower install purescript-math --save
+
+- Run
+
+  $ pulp run  
+
+- REPL
+
+  $ pulp psci
+    
 * References
 
 1. PureScript by Example
